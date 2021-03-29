@@ -57,6 +57,7 @@ export async function receive(
   const { proxies }: {
     proxies: { L: { url: { S: string }; secret: { S: string } }[] };
   } = Item;
+  console.log(Item);
 
   await Promise.all(proxies.L.map((reg) => {
     return fetch(reg.url.S, {

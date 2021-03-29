@@ -36,7 +36,7 @@ export async function receive(
     secret: "foo",
   }];
 
-  await Promise.all(regs.map((reg) => {
+  let x = await Promise.all(regs.map((reg) => {
     return fetch(reg.url, {
       method: "POST",
       headers: {
@@ -46,6 +46,8 @@ export async function receive(
       body,
     });
   }));
+
+  console.log(x);
 
   return new Response(undefined, {
     status: Status.Accepted,

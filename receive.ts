@@ -23,7 +23,8 @@ export async function receive(
     });
   }
 
-  const body = new Uint8Array(await req.arrayBuffer());
+  const body = new Uint8Array(await req.clone().arrayBuffer());
+  const jsonBody = await req.json();
   const calc = hmac("sha256", Deno.env.get("GITHUB_WEBHOOK_SECRET")!, body);
   if ("sha256=" + calc.hex() !== sig) {
     return new Response(undefined, {
@@ -31,7 +32,11 @@ export async function receive(
     });
   }
 
-  const name = req.headers.get("X-GitHub-Event")!;
+  if (jsonBody.repository?.name === undefined) {
+    return new Response(undefined, {
+      status: Status.Accepted,
+    });
+  }
 
   const client = new DynamoDBClient({
     region: "ap-south-1",
@@ -45,7 +50,7 @@ export async function receive(
     new GetItemCommand({
       TableName: "Proxies",
       Key: {
-        repoName: { S: name },
+        repoName: { S: jsonBody.repository.name },
       },
     }),
   );
@@ -57,7 +62,7 @@ export async function receive(
     return fetch(reg.url.S, {
       method: "POST",
       headers: {
-        "X-GitHub-Event": name,
+        "X-GitHub-Event": req.headers.get("X-GitHub-Event")!,
         "X-Proxy-Signature": hmac("sha256", reg.secret.S, body).hex(),
         "Content-Type": "application/json",
       },

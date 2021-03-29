@@ -1,5 +1,10 @@
-import { MatchResult } from "./deps.ts";
-import { hmac, Status } from "./deps.ts";
+import {
+  DynamoDBClient,
+  GetItemCommand,
+  hmac,
+  MatchResult,
+  Status,
+} from "./deps.ts";
 
 export async function receive(
   req: Request,
@@ -28,20 +33,31 @@ export async function receive(
 
   const name = req.headers.get("X-GitHub-Event")!;
 
-  // get registered webhooks
+  const client = new DynamoDBClient({
+    region: "ap-south-1",
+    credentials: {
+      accessKeyId: Deno.env.get("AWS_ACCESS_KEY"),
+      secretAccessKey: Deno.env.get("AWS_SECRET_KEY"),
+    },
+  });
 
-  const regs: { url: string; secret: string }[] = [{
-    url:
-      "https://discord.com/api/webhooks/825864570848542741/_1Mq4VJXtLfEAdqSAra5nxJwznBAJaWBZoFw1kWya4K1yGuoGTt8Al9aAIfazyljZWhN/github",
-    secret: "foo",
-  }];
+  const { Item } = await client.send(
+    new GetItemCommand({
+      TableName: "Proxies",
+      Key: {
+        repoName: { S: name },
+      },
+    }),
+  );
+  const { L: proxies }: { L: { url: { S: string }; secret: { S: string } }[] } =
+    Item;
 
-  await Promise.all(regs.map((reg) => {
-    return fetch(reg.url, {
+  await Promise.all(proxies.map((reg) => {
+    return fetch(reg.url.S, {
       method: "POST",
       headers: {
         "X-GitHub-Event": name,
-        "X-Proxy-Signature": hmac("sha256", reg.secret, body).hex(),
+        "X-Proxy-Signature": hmac("sha256", reg.secret.S, body).hex(),
         "Content-Type": "application/json",
       },
       body,

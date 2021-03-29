@@ -24,7 +24,6 @@ export async function receive(
   }
 
   const body = new Uint8Array(await req.clone().arrayBuffer());
-  const jsonBody = await req.json();
   const calc = hmac("sha256", Deno.env.get("GITHUB_WEBHOOK_SECRET")!, body);
   if ("sha256=" + calc.hex() !== sig) {
     return new Response(undefined, {
@@ -32,8 +31,7 @@ export async function receive(
     });
   }
 
-  console.log(jsonBody);
-
+  const jsonBody = await req.json();
   if (jsonBody.repository?.name === undefined) {
     return new Response(undefined, {
       status: Status.Accepted,
@@ -70,7 +68,6 @@ export async function receive(
       }[];
     };
   } = Item;
-  console.log(Item);
 
   await Promise.all(proxies.L.map((reg) => {
     return fetch(reg.M.url.S, {

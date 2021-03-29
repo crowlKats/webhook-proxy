@@ -20,7 +20,7 @@ export async function receive(
 
   const body = new Uint8Array(await req.arrayBuffer());
   const calc = hmac("sha256", Deno.env.get("GITHUB_WEBHOOK_SECRET")!, body);
-  console.log(sig, calc.toString());
+  console.log(sig, calc.hex());
   if ("sha256=" + calc.toString() !== sig) {
     return new Response(undefined, {
       status: Status.InternalServerError,

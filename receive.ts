@@ -41,7 +41,7 @@ export async function receive(
       method: "POST",
       headers: {
         "X-GitHub-Event": name,
-        "X-Proxy-Signature": hmac("sha256", reg.secret, body).toString(),
+        "X-Proxy-Signature": hmac("sha256", reg.secret, body).hex(),
       },
       body,
     });

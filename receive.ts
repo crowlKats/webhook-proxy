@@ -36,8 +36,8 @@ export async function receive(
     secret: "foo",
   }];
 
-  for (const reg of regs) {
-    fetch(reg.url, {
+  await Promise.all(regs.map((reg) => {
+    return fetch(reg.url, {
       method: "POST",
       headers: {
         "X-GitHub-Event": name,
@@ -45,7 +45,9 @@ export async function receive(
       },
       body,
     });
-  }
+  }));
 
-  return new Response();
+  return new Response(undefined, {
+    status: Status.Accepted,
+  });
 }

@@ -53,7 +53,7 @@ export async function receive(
     proxies: { L: { url: { S: string }; secret: { S: string } }[] };
   } = Item;
 
-  await Promise.all(proxies.map((reg) => {
+  await Promise.all(proxies.L.map((reg) => {
     return fetch(reg.url.S, {
       method: "POST",
       headers: {

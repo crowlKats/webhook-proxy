@@ -32,7 +32,7 @@ export async function receive(
 
   const regs: { url: string; secret: string }[] = [{
     url:
-      "https://discord.com/api/webhooks/825864570848542741/_1Mq4VJXtLfEAdqSAra5nxJwznBAJaWBZoFw1kWya4K1yGuoGTt8Al9aAIfazyljZWhN",
+      "https://discord.com/api/webhooks/825864570848542741/_1Mq4VJXtLfEAdqSAra5nxJwznBAJaWBZoFw1kWya4K1yGuoGTt8Al9aAIfazyljZWhN/github",
     secret: "foo",
   }];
 

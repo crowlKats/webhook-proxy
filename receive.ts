@@ -39,7 +39,7 @@ export async function receive(
   }
 
   const client = new DynamoDBClient({
-    region: "ap-south-1",
+    region: Deno.env.get("AWS_REGION"),
     credentials: {
       accessKeyId: Deno.env.get("AWS_ACCESS_KEY"),
       secretAccessKey: Deno.env.get("AWS_SECRET_KEY"),

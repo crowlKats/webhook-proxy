@@ -57,16 +57,27 @@ export async function receive(
     }),
   );
   const { proxies }: {
-    proxies: { L: { url: { S: string }; secret: { S: string } }[] };
+    proxies: {
+      L: {
+        M: {
+          secret: {
+            S: string;
+          };
+          url: {
+            S: string;
+          };
+        };
+      }[];
+    };
   } = Item;
   console.log(Item);
 
   await Promise.all(proxies.L.map((reg) => {
-    return fetch(reg.url.S, {
+    return fetch(reg.M.url.S, {
       method: "POST",
       headers: {
         "X-GitHub-Event": req.headers.get("X-GitHub-Event")!,
-        "X-Proxy-Signature": hmac("sha256", reg.secret.S, body).hex(),
+        "X-Proxy-Signature": hmac("sha256", reg.M.secret.S, body).hex(),
         "Content-Type": "application/json",
       },
       body,

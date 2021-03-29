@@ -47,7 +47,9 @@ export async function receive(
     });
   }));
 
-  console.log(x);
+  for (const x1 of x) {
+    console.log(x1, await x1.json());
+  }
 
   return new Response(undefined, {
     status: Status.Accepted,

@@ -32,6 +32,8 @@ export async function receive(
     });
   }
 
+  console.log(jsonBody);
+
   if (jsonBody.repository?.name === undefined) {
     return new Response(undefined, {
       status: Status.Accepted,
